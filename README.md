@@ -13,7 +13,7 @@ If you manage to decode the thermal data format or identify its absence in the T
 
 ## Usage
 ```bash
-python3 ThermalCameraCapture.py --input_device "/dev/video0"
+python3 read_thermal.py --input_device "/dev/video0"
 ```
 To list available devices, use `v4l2-ctl --list-devices`.
 
