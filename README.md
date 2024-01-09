@@ -17,4 +17,6 @@ python3 read_thermal.py --input_device "/dev/video0"
 ```
 To list available devices, use `v4l2-ctl --list-devices`.
 
+Images will be saved in the folder the script runs in.
+
 Feel free to contribute or provide feedback! Your engagement is greatly appreciated.
