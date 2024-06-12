@@ -1,22 +1,45 @@
-# ThermalCameraCapture
+# Instructions to save frames from two cameras
 
-This Python script simplifies the extraction of raw images and thermal data from the Topdon TC001 thermal camera, focusing specifically on obtaining the raw thermal temperature array. The primary objective is to acquire absolute temperature values, eschewing the relative high-low adjusted RGB image. This capability proves invaluable for scientific studies that demand precise temperature measurements over color-coded representations.
+Some required packages are
 
-The script streamlines complexity, presenting a straightforward workaround for compatibility issues with a similar repository at [https://github.com/leswright1977/PyThermalCamera.git](https://github.com/leswright1977/PyThermalCamera.git). While the referenced repository supports the Topdon TC001 thermal camera, it fails to function with the specific unit tested (as of Jan '24).
-
-If you manage to decode the thermal data format or identify its absence in the TC001 output, your insights are highly welcome. Share your findings, and I'll promptly integrate them into the repository.
-
-## Dependencies
-- Numpy 1.24.4
-- OpenCV 4.8.1.78 (Note: Higher versions may cause errors on arm64 - Jan '24)
-- v4l-utils 1.18.0
-
-## Usage
 ```bash
-python3 read_thermal.py --input_device "/dev/video0"
+# python3 and pip3. Generally pre-installed on Ubuntu
+sudo apt install python3 python3-pip
+
+# v4l-utils: (Video4Linux utilities)
+sudo apt-get install v4l-utils
+
+# OpenCV:
+pip3 install opencv-python
+
+# Numpy:
+pip3 install numpy
 ```
-To list available devices, use `v4l2-ctl --list-devices`.
 
-Images will be saved in the folder the script runs in.
+Once all the above are installed, run the following command:
 
-Feel free to contribute or provide feedback! Your engagement is greatly appreciated.
+```bash
+v4l2-ctl --list-devices
+```
+
+Find out the camera device paths. Ex: `/dev/video0`. Then change the camera device path in the script as needed:
+
+```python
+device_1 = "/dev/video2"  # RGB
+device_2 = "/dev/video0"  # Thermal
+# if the devices are swapped the script may not work, simply swap the device paths in the script to correct it.
+```
+
+Run the script using:
+
+```bash
+python3 save_from_two_cameras.py
+```
+
+It will show the camera frames in a window as well as the resolution of each camera in the terminal. The thermal camera resolution is 256x384. The RGB camera resolution can be changed however, by default it is 1280x720.
+
+If the resolutions look correct and the images in the windows appear correctly, then the script is running.
+
+While the Image window is selected and in the foreground, use 's' to save the image and 'q' to quit.
+
+> Due to USB bandwidth, as well as some other multi-camera issues with linux and OpenCV, the script will run slowly. Regardless, saved images will look exactly the same as displayed.
