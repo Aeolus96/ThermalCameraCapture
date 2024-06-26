@@ -6,13 +6,18 @@ import cv2
 import numpy as np
 
 ###################################################################################################
-device_1 = "/dev/video2"  # RGB Camera path
+device_1 = "/dev/video4"  # RGB Camera path
 rgb_width = 1280  # horizontal resolution
 rgb_height = 720  # vertical resolution
+zoom_level = 2.5
+zoom_center_x = 0
+zoom_center_y = 0
 
-device_2 = "/dev/video0"  # Thermal Camera path
+device_2 = "/dev/video6"  # Thermal Camera path
 thermal_width = 384  # horizontal resolution
 thermal_height = 256  # vertical resolution
+thermal_extracted_width = 256
+thermal_extracted_height = 192
 
 window_name = "Combined View"
 output_size = 512  # output image size (square with black bars)
@@ -97,7 +102,10 @@ def thermal_camera(device, verbose=False):
     # image_data = np.concatenate((top_image_data, bot_image_data), axis=1) # first one is useful
     # thermal_data = np.concatenate((top_thermal_data, bot_thermal_data), axis=1) # second one is useful
 
-    return top_image_data, bot_thermal_data  # gray image, raw thermal data(not verified but looks like scaled temp)
+    return (
+        top_image_data,
+        bot_thermal_data,
+    )  # gray image, raw thermal data(not verified but looks like scaled temp)
 
 
 def resize_with_blackbars(image, target_size):
@@ -127,6 +135,29 @@ def resize_with_blackbars(image, target_size):
     return canvas
 
 
+def zoom_crop(image, x_offset, y_offset, crop_width, crop_height):
+    """Crop an image using offsets and crop dimensions."""
+
+    width, height = image.shape[1], image.shape[0]  # Get image dimensions
+
+    # Set crop dimensions to fit within image
+    crop_width = int(crop_width if crop_width < width else width)
+    crop_height = int(crop_height if crop_height < height else height)
+
+    # Calculate crop offsets
+    x_center = int(width / 2) + x_offset
+    y_center = int(height / 2) + y_offset
+
+    # Crop image bounds
+    x_start = x_center - int(crop_width / 2)
+    x_end = x_center + int(crop_width / 2)
+    y_start = y_center - int(crop_height / 2)
+    y_end = y_center + int(crop_height / 2)
+
+    # Crop image and return
+    return image[y_start:y_end, x_start:x_end]
+
+
 # Start first image capture to verify
 a = rgb_camera(device_1, verbose=True)
 b, c = thermal_camera(device_2, verbose=True)
@@ -139,7 +170,13 @@ while True:
     # frame_thermal_rawdata_rgb = cv2.cvtColor(frame_thermal_rawdata, cv2.COLOR_GRAY2BGR)
 
     # RGB Camera ----------------------------------------------------------------------------------
-    frame_rgb = rgb_camera(device_1)
+    frame_rgb = zoom_crop(  # crop image using offsets and crop dimensions
+        rgb_camera(device_1),  # get latest frame
+        x_offset=zoom_center_x,
+        y_offset=zoom_center_y,
+        crop_width=thermal_extracted_width * zoom_level,
+        crop_height=thermal_extracted_height * zoom_level,
+    )
 
     # Resize --------------------------------------------------------------------------------------
     resized_thermal_rgb = resize_with_blackbars(frame_thermal_rgb, output_size)
