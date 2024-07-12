@@ -46,7 +46,7 @@ def process_directory(directory, padding):
                 print(f"Warning: RGB image {rgb_path} not found for {thermal_path}")
 
 if __name__ == "__main__":  
-    directory_path = "./Spill"
+    directory_path = "./spill"
     padding_to_remove = 64  # Set the number of pixels to remove from top and bottom
     
     process_directory(directory_path, padding_to_remove)
