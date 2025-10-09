@@ -33,13 +33,13 @@ device_2 = "/dev/video0"  # Thermal
 Run the script using:
 
 ```bash
-python3 save_from_two_cameras.py
+python3 SaveImgDataCollection.py
 ```
 
-It will show the camera frames in a window as well as the resolution of each camera in the terminal. The thermal camera resolution is 256x384. The RGB camera resolution can be changed however, by default it is 1280x720.
+It will show the camera frames in a window as well as the resolution of each camera in the terminal. The thermal camera resolution is 256x384. The RGB camera resolution can be changed; however, by default it is 1920x1080.
 
 If the resolutions look correct and the images in the windows appear correctly, then the script is running.
 
 While the Image window is selected and in the foreground, use 's' to save the image and 'q' to quit.
 
-> Due to USB bandwidth, as well as some other multi-camera issues with linux and OpenCV, the script will run slowly. Regardless, saved images will look exactly the same as displayed.
+Note: Some scripts require a controller to be plugged in. Upon receiving a controller input, the script will send a serial message over USB. A sample sketch is included for a robot using the TETRIX PRIZM platform to receive these messages and move accordingly.
